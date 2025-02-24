@@ -1,0 +1,14 @@
+Ideas for the open source project
+
+1. Investment management application 
+2. Real Estate Investment Analyzer - Combine neighborhood data, price trends, and economic indicators to score investment opportunities
+3. Discord time tracking - time spent online in different apps/games
+4. Uno
+
+Uno was chosen 
+
+Current tech stack
+1. Frontend: react
+2. Backend: Node.js with Express
+3. Database: MongoDB
+4. Real-time: Socket.io
