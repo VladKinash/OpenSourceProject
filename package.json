@@ -1,7 +1,7 @@
 {
   "name": "open-source-development",
   "version": "1.0.0",
-  "description": "",
+  "description": "This is a web application UNO cards game \r # Run the application\r Use the ```npm init``` command to create the needed directories\r Run the program with ```nodemon index.js``` command",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,7 +11,7 @@
   "dependencies": {
     "ejs": "^3.1.10",
     "express": "^4.21.2",
-    "mongoose": "^8.11.0",
+    "mongoose": "^8.12.1",
     "nodemon": "^3.1.9"
   }
 }

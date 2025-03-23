@@ -9,7 +9,7 @@ app.use(express.static('views'));
 const port = 1000;
 
 app.get('/', (req, res) => {
-    res.render('pages/home');
+    res.redirect('/login');
 })
 
 // login Page
@@ -19,6 +19,10 @@ app.get('/login', (req, res) => {
 })
 
 // signup Page
+
+app.get('/signup', (req, res) => {
+    res.render('pages/signup');
+})
 
 // Game Page
 
