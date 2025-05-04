@@ -8,7 +8,7 @@ Ideas for the open source project
 Uno was chosen 
 
 Current tech stack
-1. Frontend: react, bootstrap
+1. Frontend: express, bootstrap
 2. Backend: Node.js with Express
-3. Database: MongoDB
+3. Database: MySQL
 4. Real-time: Socket.io
