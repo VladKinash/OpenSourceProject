@@ -4,11 +4,14 @@
     </style>
 </head>
 <body>
-    <form action="" method="">
+    <% if (error) { %>
+        <p style="color: red;"><%= error %></p>
+    <% } %>
+    <form action="/login" method="POST">
         <label for="username">Username :</label>
-        <input type="text" id="username" placeholder="Username"><br>
+        <input type="text" id="username" placeholder="Username" name="username" required><br>
         <label for="password">Password :</label>
-        <input type="text" id="password" placeholder="password"><br>
+        <input type="text" id="password" placeholder="password" name="password" required><br>
         <button type="submit">Submit</button>
     </form>
     <p>Don't have an account? <a href="/signup">Sign up</a>

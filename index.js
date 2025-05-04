@@ -1,10 +1,13 @@
 const express = require('express');
 const app = express();
 const mysql = require('mysql2');
+const bcrypt = require('bcrypt');
+const path = require('path');
 app.use(express.urlencoded({ extended: true }));
 app.set('view engine','ejs');
 app.use(express.json());
 app.use(express.static('views'));
+app.set('views', path.join(__dirname, 'views'));
 const pool = mysql.createPool({
     host: 'localhost',
     user: 'root',
@@ -28,31 +31,59 @@ app.get('/', (req, res) => {
 // login Page
 
 app.get('/login', (req, res) => {
-    res.render('pages/login');
-})
+    res.render('pages/login', { error: null });
+  });
+
+app.post('/login', async (req, res) => {
+    const { username, password } = req.body;
+    try {
+        const [users] = await db.execute('SELECT * FROM users WHERE username = ?', [username]);
+        if (users.length === 0) {
+        return res.render('pages/login', { error: 'Invalid username or password.' });
+        }
+        const user = users[0];
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.render('pages/login', { error: 'Invalid username or password.' });
+        }
+        // Redirect on successful login
+        res.redirect('home');
+    } catch (err) {
+        console.error(err);
+        res.render('pages/login', { error: 'Server error. Please try again.' });
+    }
+});
 
 // signup Page
 
 app.get('/signup', (req, res) => {
-    res.render('pages/signup');
+    res.render('pages/signup', {error: null});
 })
 
 app.post('/signup', async (req, res) => {
-    try {
-        const username = req.body.username; 
-        const [users] = await db.query('SELECT * FROM users WHERE username='+username)
-        if (users.length == 0){
-            if (req.body.password == req.body.re_password){
-                const [result] = await db.execute('INSERT INTO users (username, password) VALUES ('+username+', '+req.body.password+')');
-            } else {
-                res.render('/signup', {"error": "passwords do not match"});
-            }
-        } else {
-            res.render('/signup', {"error": "user already exists"});
-        }
-    } catch (error){
-        console.log(error);
+    const { username, password, re_password } = req.body;
+    if (!username || !password || !re_password) {
+      return res.render('pages/signup', { error: 'All fields are required.' });
     }
+    if (password !== re_password) {
+      return res.render('pages/signup', { error: 'Passwords do not match.' });
+    }
+    try {
+      const [users] = await db.execute('SELECT id FROM users WHERE username = ?', [username]);
+      if (users.length > 0) {
+        return res.render('pages/signup', { error: 'Username already exists.' });
+      }
+      const hashedPassword = await bcrypt.hash(password, 10);
+      await db.execute('INSERT INTO users (username, password, role) VALUES (?, ?, ?)', [username, hashedPassword, 'player']);
+      res.redirect('/login');
+    } catch (err) {
+      console.error(err);
+      
+    }
+  });
+
+app.get('/home', (req, res) => {
+    res.render('pages/home')
 })
 
 // Game Page
