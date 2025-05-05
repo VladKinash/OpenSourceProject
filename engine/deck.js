@@ -2,11 +2,11 @@ import Card from './card';
 
 export default class Deck {
   constructor() {
-    this.deck = this.shuffle(this.build());
+    this.deck = this.build();
     this.discardPile = [];
   }
 
-  build() {
+  static buildUnoDeck() {
     const colors = ['red', 'yellow', 'green', 'blue'];
     const cards = [];
 
@@ -30,12 +30,18 @@ export default class Deck {
     return cards;
   }
 
-  shuffle(array = this.deck) {
-    for (let i = array.length - 1; i > 0; i--) {
+  static shuffleDeck(array) {
+    const deck = array.slice();
+    for (let i = deck.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
+      [deck[i], deck[j]] = [deck[j], deck[i]];
     }
-    return array;
+    return deck;
+  }
+
+  shuffle() {
+    this.deck = Deck.shuffleDeck(this.deck);
+    return this.deck;
   }
 
   drawCard() {
@@ -54,7 +60,7 @@ export default class Deck {
   _reshuffle() {
     if (this.discardPile.length <= 1) return;
     const top = this.discardPile.pop();
-    this.deck = this.shuffle(this.discardPile);
+    this.deck = Deck.shuffleDeck(this.discardPile);
     this.discardPile = [top];
   }
 }
