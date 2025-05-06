@@ -1,20 +1,28 @@
-class Game {
+import Card    from './card.js';
+import Deck    from './deck.js';
+import Effects from './effects.js';
+
+export default class Game {
   constructor(playerNames) {
     this.players = playerNames.map(name => ({ name, hand: [] }));
-    this.deck = [];
-    this.discardPile = [];
+    this.deck    = new Deck();
     this.currentPlayerIndex = 0;
-    this.direction = 1;
-    this.isOver = false;
-    this.scores = {};
+    this.direction          = 1;
+    this.isOver             = false;
+    this.scores             = {};
   }
 
   startGame() {
-    this.deck = Deck.shuffleDeck(Deck.buildUnoDeck());
-    this.assignCards();
-    this.discardPile.push(this.deck.pop());
-    const top = this.getTopCard();
+    this.deck.shuffle();
+    this.players.forEach(p => p.hand = []);
+    for (let i = 0; i < 7; i++) {
+      this.players.forEach(p => p.hand.push(this.deck.drawCard()));
+    }
 
+    const first = this.deck.drawCard();
+    this.deck.discard(first);
+
+    const top = this.getTopCard();
     switch (top.type) {
       case 'skip':
         this.advanceTurn();
@@ -34,49 +42,42 @@ class Game {
     }
   }
 
-  assignCards() {
-    for (let i = 0; i < this.players.length; i++) {
-      this.players[i].hand = this.deck.splice(0, 7);
-    }
-  }
-
   advanceTurn() {
-    const count = this.players.length;
-    this.currentPlayerIndex = (this.currentPlayerIndex + this.direction + count) % count;
+    const n = this.players.length;
+    this.currentPlayerIndex = (this.currentPlayerIndex + this.direction + n) % n;
   }
 
   drawForCurrentPlayer(n) {
     for (let i = 0; i < n; i++) {
-      if (this.deck.length === 0) this._reshuffle();
-      const card = this.deck.pop();
-      this.players[this.currentPlayerIndex].hand.push(card);
+      this.players[this.currentPlayerIndex].hand.push(this.deck.drawCard());
     }
   }
 
   getTopCard() {
-    return this.discardPile[this.discardPile.length - 1] || null;
+    return this.deck.getTopDiscard();
   }
 
-  _reshuffle() {
-    if (this.discardPile.length <= 1) return;
-    const top = this.discardPile.pop();
-    this.deck = Deck.shuffleDeck(this.discardPile);
-    this.discardPile = [top];
-  }
-
-  playCard(playerIndex, cardIndex, chosenColor) {
+  playCard(playerIndex, cardIndex, chosenColor = null) {
     if (this.isOver) throw new Error('Game is already over');
+    if (playerIndex !== this.currentPlayerIndex)
+      throw new Error('Not your turn');
 
     const player = this.players[playerIndex];
-    const card = player.hand[cardIndex];
-    const topCard = this.getTopCard();
+    const card   = player.hand[cardIndex];
+    const top    = this.getTopCard();
 
-    if (!Card.isValidPlay(topCard, card)) {
-      throw new Error('Invalid play: card does not match color, value, or type');
-    }
+    if (!Card.isValidPlay(top, card))
+      throw new Error('Invalid play');
+
+    if ((card.type === 'wild' || card.type === 'wild_draw4') && !chosenColor)
+      throw new Error('A color must be chosen when playing a wild card');
+
+    if (card.type === 'wild' || card.type === 'wild_draw4')
+      card.chosenColor = chosenColor;
 
     player.hand.splice(cardIndex, 1);
-    this.discardPile.push(card);
+    this.deck.discard(card);
+
     Effects.apply(this, card, chosenColor);
 
     if (player.hand.length === 0) {
@@ -90,23 +91,17 @@ class Game {
   endRound(winnerIndex) {
     this.isOver = true;
     const scores = {};
-
     this.players.forEach((p, idx) => {
       if (idx === winnerIndex) {
         scores[p.name] = 0;
       } else {
-        let total = 0;
-        p.hand.forEach(c => {
-          if (c.type === 'number') total += c.value;
-          else if (['skip', 'reverse', 'draw2'].includes(c.type)) total += 20;
-          else if (['wild', 'wild_draw4'].includes(c.type)) total += 50;
-        });
-        scores[p.name] = total;
+        scores[p.name] = p.hand.reduce((sum, c) => {
+          if (c.type === 'number') return sum + c.value;
+          if (['skip','reverse','draw2'].includes(c.type)) return sum + 20;
+          return sum + 50; // wilds
+        }, 0);
       }
     });
-
     this.scores = scores;
   }
 }
-
-export default Game;

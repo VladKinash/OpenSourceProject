@@ -1,8 +1,8 @@
-import Card from './card';
+import Card from './card.js';
 
 export default class Deck {
   constructor() {
-    this.deck = this.build();
+    this.deck = Deck.buildUnoDeck();
     this.discardPile = [];
   }
 
@@ -11,17 +11,23 @@ export default class Deck {
     const cards = [];
 
     for (const color of colors) {
+      // Add one 0 card
       cards.push(new Card(color, 0, 'number'));
+
+      // Add two of each 1–9 number card
       for (let i = 1; i <= 9; i++) {
         cards.push(new Card(color, i, 'number'));
         cards.push(new Card(color, i, 'number'));
       }
+
+      // Add two of each action card per color
       for (const type of ['skip', 'reverse', 'draw2']) {
         cards.push(new Card(color, null, type));
         cards.push(new Card(color, null, type));
       }
     }
 
+    // Add wild cards
     for (let i = 0; i < 4; i++) {
       cards.push(new Card(null, null, 'wild'));
       cards.push(new Card(null, null, 'wild_draw4'));

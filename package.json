@@ -1,6 +1,7 @@
 {
   "name": "open-source-development",
   "version": "1.0.0",
+  "type": "module",
   "description": "This is a web application UNO cards game \r # Run the application\r Use the ```npm init``` command to create the needed directories\r Run the program with ```nodemon index.js``` command",
   "main": "index.js",
   "scripts": {
@@ -16,6 +17,8 @@
     "mysql": "^2.18.1",
     "mysql2": "^3.14.1",
     "nodemon": "^3.1.9",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1"
   }
 }
