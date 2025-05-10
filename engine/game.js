@@ -1,8 +1,8 @@
-import Card    from './card.js';
-import Deck    from './deck.js';
-import Effects from './effects.js';
+const Card = require('./card');
+const Deck = require('./deck');
+const Effects = require('./effects');
 
-export default class Game {
+class Game {
   constructor(playerNames) {
     this.players = playerNames.map(name => ({ name, hand: [] }));
     this.deck    = new Deck();

@@ -1,4 +1,4 @@
-import { io } from "socket.io-client";
+const { io } = require('socket.io-client');
 
 async function delay(ms) {
     return new Promise((r) => setTimeout(r, ms));

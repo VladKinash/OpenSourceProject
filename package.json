@@ -1,7 +1,7 @@
 {
   "name": "open-source-development",
   "version": "1.0.0",
-  "type": "module",
+  
   "description": "This is a web application UNO cards game \r # Run the application\r Use the ```npm init``` command to create the needed directories\r Run the program with ```nodemon index.js``` command",
   "main": "index.js",
   "scripts": {
