@@ -1,0 +1,119 @@
+<%- include('../partials/head'); %>
+<title>Home Page</title>
+<style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lobby-container {
+      width: 400px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 20px;
+      text-align: left;
+    }
+
+    .user-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .user-row img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      margin-right: 15px;
+    }
+
+    .user-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .status {
+      font-weight: bold;
+    }
+
+    .ready {
+      color: green;
+    }
+
+    .pending {
+      color: orange;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background-color: #007bff;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="lobby-container">
+    <div class="user-row">
+      <img src="https://via.placeholder.com/50" alt="User 1" />
+      <div class="user-info">
+        <span>User 1</span>
+        <span class="status ready">Ready</span>
+      </div>
+    </div>
+
+    <div class="user-row">
+      <img src="https://via.placeholder.com/50" alt="User 2" />
+      <div class="user-info">
+        <span>User 2</span>
+        <span class="status ready">Ready</span>
+      </div>
+    </div>
+
+    <div class="user-row">
+      <img src="https://via.placeholder.com/50" alt="User 3" />
+      <div class="user-info">
+        <span>User 3</span>
+        <span class="status ready">Ready</span>
+      </div>
+    </div>
+
+    <button id="readyBtn">Ready</button>
+  </div>
+
+  <script>
+
+    const readyBtn = document.getElementById('readyBtn');
+    readyBtn.addEventListener('click', () => {
+    const statuses = document.querySelectorAll('.status');
+    const allReady = Array.from(statuses).every(status =>
+        status.classList.contains('ready')
+    );
+
+    // Replace the "Ready" button with a "Wait" button
+    const waitBtn = document.createElement('button');
+    waitBtn.textContent = 'Waiting ...';
+    waitBtn.disabled = true;
+    waitBtn.style.backgroundColor = '#6c757d';
+
+    readyBtn.parentNode.replaceChild(waitBtn, readyBtn);
+
+    
+    if (allReady) {
+        window.location.href = '/room/randomRoomName'; // Navigate if all ready
+    }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<%- include('../partials/head'); %>
+<title>Home Page</title>
+<style>
+    body {
+      margin: 0;
+      background-color: #2e7d32;
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .table {
+      width: 90vw;
+      height: 90vh;
+      border: 5px solid #fff;
+      border-radius: 20px;
+      position: relative;
+      background-color: #388e3c;
+    }
+
+    .player {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: white;
+    }
+
+    .player-hand {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .card {
+      width: 50px;
+      height: 75px;
+      background-color: red;
+      border-radius: 5px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-weight: bold;
+      font-size: 20px;
+    }
+
+    /* Positioning players */
+    .bottom { bottom: 20px; left: 50%; transform: translateX(-50%); }
+    .top { top: 20px; left: 50%; transform: translateX(-50%); }
+    .left { left: 20px; top: 50%; transform: translateY(-50%); }
+    .right { right: 20px; top: 50%; transform: translateY(-50%); }
+
+    .center-pile {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .pile-card {
+      width: 60px;
+      height: 90px;
+      background-color: yellow;
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: black;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .name {
+      margin-bottom: 5px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .give-up-btn {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        background-color: #d32f2f;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+        transition: background-color 0.3s;
+        }
+
+    .give-up-btn:hover {
+        background-color: #b71c1c;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="table">
+    <!-- Center Pile -->
+    <div class="center-pile">
+      <div class="pile-card">4</div>
+    </div>
+
+    <!-- Players -->
+    <%let position = ["top", "left", "right", "bottom"] %>
+    <% for (let i=0;i<users.length;i++) {%>
+    <div class="player <%= position[i]%>">
+      <div class="name"><%= users[i]%></div>
+      <div class="player-hand">
+      </div>
+    </div>
+    <% } %>
+
+    
+
+    <div class="player bottom">
+      <div class="name">You</div>
+      <div class="player-hand">
+        <div class="card" style="background-color: blue;">5</div>
+        <div class="card" style="background-color: green;">7</div>
+        <div class="card" style="background-color: red;">Skip</div>
+        <div class="card" style="background-color: yellow;">2</div>
+      </div>
+    </div>
+    <button class="give-up-btn" onclick="window.location.href = '/home'">Give Up</button>
+
+  </div>
+
+</body>
+</html>
