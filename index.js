@@ -58,7 +58,7 @@ app.post('/login', async (req, res) => {
 
 app.get('/signup', (req, res) => {
     res.render('pages/signup', {error: null});
-})
+});
 
 app.post('/signup', async (req, res) => {
     const { username, password, re_password } = req.body;
@@ -80,11 +80,21 @@ app.post('/signup', async (req, res) => {
       console.error(err);
       
     }
-  });
+});
 
 app.get('/home', (req, res) => {
-    res.render('pages/home')
-})
+    res.render('pages/home');
+});
+
+app.get('/lobby/:lobbyName', (req, res) => {
+  const lobbyName = req.params.lobbyName;
+  res.render('pages/lobby', {lobby: lobbyName,});
+});
+
+app.get('/room/:lobbyName', (req, res) => {
+  const lobbyName = req.params.lobbyName;
+  res.render('pages/room', {room: lobbyName,users:['user1', 'user2', 'user3']});
+});
 
 // Game Page
 

@@ -1,6 +1,6 @@
-import Card from './card.js';
+const Card = require('./card');
 
-export default class Deck {
+class Deck {
   constructor() {
     this.deck = Deck.buildUnoDeck();
     this.discardPile = [];

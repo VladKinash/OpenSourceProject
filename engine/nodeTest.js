@@ -1,6 +1,11 @@
+<<<<<<< HEAD
 import Game from './game.js';
 import Card from './card.js';
 
+=======
+const Game = require('./Game');
+const Card = require('./card');
+>>>>>>> 8d9a60f44fa498286ce6569760184f10af83b032
 function rand(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }

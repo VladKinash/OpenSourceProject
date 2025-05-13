@@ -1,4 +1,4 @@
-export default class Card {
+class Card {
   constructor(color, value, type) {
     this.color = color;
     this.value = value;

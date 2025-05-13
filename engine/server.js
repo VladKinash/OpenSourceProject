@@ -1,7 +1,7 @@
-import express from 'express';
-import http from 'http';
-import { Server } from 'socket.io';
-import Game from './game.js';
+const express = require('express');
+const http = require('http');
+const { Server } = require('socket.io');
+const Game = require('./Game');
 
 const app = express();
 const server = http.createServer(app);

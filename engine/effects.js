@@ -1,4 +1,4 @@
-export default class Effects {
+class Effects {
   static apply(game, card, chosenColor) {
     switch (card.type) {
       case "skip":
