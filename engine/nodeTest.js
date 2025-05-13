@@ -1,4 +1,4 @@
-import Game from './Game.js';
+import Game from './game.js';
 import Card from './card.js';
 
 function rand(arr) {
