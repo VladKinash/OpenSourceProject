@@ -6,7 +6,9 @@ const Game = require('./Game');
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: '*' } });
+
 const games = new Map();
+const readyMap = new Map();
 
 function generateUniqueId() {
   return Math.random().toString(36).substr(2, 9);
@@ -15,26 +17,22 @@ function generateUniqueId() {
 function broadcastState(roomId) {
   const entry = games.get(roomId);
   if (!entry) return;
-  const { game } = entry;
-
+  const { game, socketMap } = entry;
   const top = game.getTopCard();
-  const discardTop = top
-    ? { ...top, chosenColor: top.chosenColor || null }
-    : null;
+  const discardTop = top ? { ...top, chosenColor: top.chosenColor || null } : null;
 
-  game.players.forEach((player, index) => {
+  game.players.forEach((p, idx) => {
     io.to(roomId).emit('gameState', {
-      players: game.players.map(p => ({ name: p.name, handCount: p.hand.length })),
-      hand: game.players[index].hand,
+      players: game.players.map(pp => ({ name: pp.name, handCount: pp.hand.length })),
+      hand: game.players[idx].hand,
       discardTop,
       currentPlayerIndex: game.currentPlayerIndex,
       direction: game.direction,
       isOver: game.isOver,
-      scores: game.scores || {}
+      scores: game.scores
     });
   });
 }
-
 
 io.on('connection', socket => {
   socket.on('createGame', ({ playerNames }) => {
@@ -51,14 +49,24 @@ io.on('connection', socket => {
     const entry = games.get(roomId);
     if (!entry) return socket.emit('error', 'Room not found');
     const { game, socketMap } = entry;
-    const newIdx = game.players.length;
+    const idx = game.players.length;
     game.players.push({ name: playerName, hand: [] });
     for (let i = 0; i < 7; i++) {
-      game.players[newIdx].hand.push(game.deck.drawCard());
+      game.players[idx].hand.push(game.deck.drawCard());
     }
     socket.join(roomId);
-    socketMap[socket.id] = newIdx;
+    socketMap[socket.id] = idx;
     broadcastState(roomId);
+  });
+
+  socket.on('playerReady', ({ roomId }) => {
+    if (!readyMap.has(roomId)) readyMap.set(roomId, new Set());
+    readyMap.get(roomId).add(socket.id);
+    const entry = games.get(roomId);
+    if (entry && readyMap.get(roomId).size === entry.game.players.length) {
+      io.to(roomId).emit('allReady');
+      readyMap.delete(roomId);
+    }
   });
 
   socket.on('startGame', ({ roomId }) => {
@@ -77,7 +85,6 @@ io.on('connection', socket => {
     if (!entry) return socket.emit('error', 'Room not found');
     const { game, socketMap } = entry;
     const playerIdx = socketMap[socket.id];
-    if (playerIdx !== game.currentPlayerIndex) return socket.emit('error', 'Not your turn');
     try {
       game.playCard(playerIdx, cardIndex, chosenColor);
       broadcastState(roomId);
@@ -91,7 +98,6 @@ io.on('connection', socket => {
     if (!entry) return socket.emit('error', 'Room not found');
     const { game, socketMap } = entry;
     const playerIdx = socketMap[socket.id];
-    if (playerIdx !== game.currentPlayerIndex) return socket.emit('error', 'Not your turn');
     try {
       game.drawForCurrentPlayer(1);
       broadcastState(roomId);
@@ -113,4 +119,15 @@ io.on('connection', socket => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT);
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+}).on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`Port ${PORT} is already in use.`);
+    process.exit(1);
+  } else {
+    throw err;
+  }
+});
+
+module.exports = { games };
